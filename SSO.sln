@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicApiCvProfile", "Publi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F1613524-75D4-45A6-97C7-A6B8683AADBA}"
 	ProjectSection(SolutionItems) = preProject
-		TODO.txt = TODO.txt
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Website4", "Website4\Website4.csproj", "{D9522325-F185-49DB-BF02-FD0E2D066C53}"
