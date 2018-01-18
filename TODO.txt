@@ -1,0 +1,1 @@
+1. Scope'y powinny identyfikowaæ "zasób", np. aplikacje (res), rekomendacje (res), CV-ki/dokumenty (res), profil (id), email (id), adres (id), tel (id)

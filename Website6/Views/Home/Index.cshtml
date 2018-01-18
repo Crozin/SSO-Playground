@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Publiczna";
+}
+
+<div>
+    <ul class="inline pull-right">
+        <li>Menu:</li>
+        <li>@Html.ActionLink("publiczna", "Index", "Home")</li>
+        <li>@Html.ActionLink("chroniona", "Protected", "Home")</li>
+    </ul>
+    <h1>DEMO Website #6 - strona publiczna</h1>
+    <table>
+        <tbody>
+            <tr>
+                <th>Typ strony</th>
+                <td>Statyczna strona z MVC</td>
+                <th>Tryb uwierzytelniania</th>
+                <td><kbd>Flows.AuthorizationCode</kbd></td>
+            </tr>
+            <tr>
+                <th>Typ tokenu</th>
+                <td>JWT</td>
+                <th>Typ odpowiedzi</th>
+                <td><kbd>code</kbd></td>
+            </tr>
+            <tr>
+                <th colspan="2">Tokeny transportowane przez przeglądarkę?</th>
+                <td colspan="2">Nie</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>W pełni manualny mechanizm uwierzyteleniania</h2>
+</div>

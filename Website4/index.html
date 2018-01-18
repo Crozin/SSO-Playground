@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publiczna - #4</title>
+    <link href="site.css" rel="stylesheet"/>
+</head>
+<body>
+
+<header id="master-header">
+    trwa ładowanie nagłówka...
+</header>
+
+<div id="master-container" class="container">
+    <div>
+        <h1>DEMO Website #4 - strona publiczna</h1>
+        <table>
+            <tbody>
+            <tr>
+                <th>Typ strony</th>
+                <td>Aplikacja JS</td>
+                <th>Tryb uwierzytelniania</th>
+                <td><kbd>Flows.Implict</kbd></td>
+            </tr>
+            <tr>
+                <th>Typ tokenu</th>
+                <td>JWT</td>
+                <th>Typ odpowiedzi</th>
+                <td><kbd>id_token token</kbd></td>
+            </tr>
+            <tr>
+                <th colspan="2">Tokeny transportowane przez przeglądarkę?</th>
+                <td colspan="2">
+                    Tak<br />
+                    Brak dostępu do <kbd>refresh_token</kbd>.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        
+        <h2>Przykładowe akcje</h2>
+        <ul class="action-list">
+            <li><button class="call-api" data-action="show-languages">Pokaż moje języki</button></li>
+            <li><button class="call-api" data-action="update-languages">Aktualizuj moje języki</button> <input type="text" id="known-languages" placeholder="oddziel języki przecinkiem" /></li>
+        </ul>
+        <ul class="action-list">
+            <li><button class="call-api" data-action="show-photo">Pokaż moje zdjęcie</button></li>
+            <li><button class="call-api" data-action="update-photo">Aktualizuj moje zdjęcie</button> <input type="file" id="photo" /></li>
+        </ul>
+        
+        <h2>Dane</h2>
+        <h5>AJAX result</h5>
+        <div id="ajax-result"></div>
+        <h5>Response</h5>
+        <pre id="response"></pre>
+        <h5>ID Token</h5>
+        <pre id="id-token"></pre>
+        <h5>Access Token</h5>
+        <pre id="access-token"></pre>
+    </div>
+</div>
+
+<footer id="master-footer">
+    <div class="container">
+        &copy; Pracuj
+    </div>
+</footer>
+    
+<script src="/oidc-client.js"></script>
+<script src="/app.js"></script>
+    
+<script id="heading-config" type="text/x-pracuj-heading-configuration">
+    {
+        "user": null,
+        "target": "#master-header",
+        "signinUri": "/",
+        "signoutUri": "/"
+    }
+</script>
+<script>
+    // Nie bijce, nie znam JS
+
+    (function (w) {
+        "use strict";
+
+        var triggerSignIn = function() {
+            signIn("openid profile api_cv_profile", "id_token token");
+        };
+
+        var triggerSignOut = function() {
+            signOut();
+        };
+
+        w.document.body.addEventListener("click", function (evt) {
+            var isSignIn = evt.target.id === "gp-heading-signin";
+            var isSignOut = evt.target.id === "gp-heading-signout";
+
+            if (!isSignIn && !isSignOut) {
+                return;
+            }
+
+            evt.preventDefault();
+
+            if (isSignIn) {
+                triggerSignIn();
+            }
+
+            if (isSignOut) {
+                triggerSignOut();
+            }
+        }, false);
+    })(window);
+</script>
+<script src="http://website-heading.sso/heading.js" async defer data-config="heading-config"></script>
+</body>
+</html>

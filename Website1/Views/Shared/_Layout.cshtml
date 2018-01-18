@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - #1</title>
+    @Styles.Render("~/Content/css")
+</head>
+<body>
+<header id="master-header">
+    trwa ładowanie nagłówka...
+</header>
+
+<div id="master-container" class="container">
+    @RenderBody()
+</div>
+    
+<footer id="master-footer">
+    <div class="container">
+        &copy; Pracuj
+    </div>
+</footer>
+
+<script id="heading-config" type="text/x-pracuj-heading-configuration">
+    @Html.Raw(Json.Encode(new
+{
+    user = Request.IsAuthenticated ? new
+    {
+        name = User.GetName()
+    } : null,
+    target = "#master-header",
+    signinUri = Url.Action("OidcSignIn", "Home", null),
+    signoutUri = Url.Action("Signout", "Home", null)
+}))
+</script>
+<script src="http://website-heading.sso/heading.js" async defer data-config="heading-config"></script>
+@RenderSection("scripts", required: false)
+</body>
+</html>

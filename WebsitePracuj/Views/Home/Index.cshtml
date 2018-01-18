@@ -1,0 +1,21 @@
+﻿@model WebsitePracuj.Controllers.HomeIndexViewModel
+
+@{
+    ViewBag.Title = "Publiczna";
+}
+
+<div>
+    <ul class="inline pull-right">
+        <li>Menu:</li>
+        <li>@Html.ActionLink("publiczna", "Index", "Home")</li>
+        <li>@Html.ActionLink("chroniona", "Protected", "Home")</li>
+    </ul>
+    <h1>DEMO Website Pracuj - strona główna</h1>
+    <h2>Ostatnie oferty pracy:</h2>
+    <ol>
+        @foreach (var o in Model.Offers)
+        {
+            <li>@o.Title</li>
+        }
+    </ol>
+</div>
