@@ -38,6 +38,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedNet", "SharedNet\Shar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebsitePracodawcy", "WebsitePracodawcy\WebsitePracodawcy.csproj", "{F7FDA94E-84A1-4976-B84A-6DDCCCFD3701}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebsiteSharedA", "WebsiteSharedA\WebsiteSharedA.csproj", "{B95E933A-335C-4299-B924-C79BF6B0CD9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebsiteSharedB", "WebsiteSharedB\WebsiteSharedB.csproj", "{7853AAA9-BA92-434E-B050-95AD9EB28F6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +108,14 @@ Global
 		{F7FDA94E-84A1-4976-B84A-6DDCCCFD3701}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7FDA94E-84A1-4976-B84A-6DDCCCFD3701}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7FDA94E-84A1-4976-B84A-6DDCCCFD3701}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B95E933A-335C-4299-B924-C79BF6B0CD9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B95E933A-335C-4299-B924-C79BF6B0CD9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B95E933A-335C-4299-B924-C79BF6B0CD9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B95E933A-335C-4299-B924-C79BF6B0CD9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7853AAA9-BA92-434E-B050-95AD9EB28F6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7853AAA9-BA92-434E-B050-95AD9EB28F6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7853AAA9-BA92-434E-B050-95AD9EB28F6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7853AAA9-BA92-434E-B050-95AD9EB28F6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

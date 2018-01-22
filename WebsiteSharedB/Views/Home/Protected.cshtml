@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Chroniona";
+}
+
+<div>
+    <ul class="inline pull-right">
+        <li>Menu:</li>
+        <li>@Html.ActionLink("publiczna", "Index", "Home")</li>
+        <li>@Html.ActionLink("chroniona", "Protected", "Home")</li>
+    </ul>
+    <h1>Shared Website B - strona chroniona</h1>
+    <table>
+        <thead>
+        <tr>
+            <th colspan="2">Twoje claimy</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var claim in ViewBag.Claims)
+        {
+            <tr>
+                <th>@claim.Type</th>
+                <td>@claim.Value</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

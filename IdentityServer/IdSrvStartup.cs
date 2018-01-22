@@ -375,6 +375,51 @@ namespace IdentityServer
             },
 
             #endregion
+
+            #region Shared Websites
+            
+            new Client
+            {
+                ClientId = "websiteshareda",
+                ClientName = "WebSite Shared A",
+                ClientUri = "http://website-a.shared.sso/",
+                Flow = Flows.Implicit,
+                RedirectUris = new List<string> { "http://website-a.shared.sso/" },
+                PostLogoutRedirectUris = new List<string> { "http://website-a.shared.sso/" },
+                LogoutUri = "http://website-a.shared.sso/Home/OidcSignOut",
+                LogoutSessionRequired = true,
+                IdentityTokenLifetime = 120,
+                RequireSignOutPrompt = true,
+                AllowedScopes =
+                {
+                    Constants.StandardScopes.OpenId,
+                    Constants.StandardScopes.Profile
+                },
+                RequireConsent = false,
+                AllowRememberConsent = true,
+            },
+            new Client
+            {
+                ClientId = "websitesharedb",
+                ClientName = "WebSite Shared B",
+                ClientUri = "http://website-b.shared.sso/",
+                Flow = Flows.Implicit,
+                RedirectUris = new List<string> { "http://website-b.shared.sso/" },
+                PostLogoutRedirectUris = new List<string> { "http://website-b.shared.sso/" },
+                LogoutUri = "http://website-b.shared.sso/Home/OidcSignOut",
+                LogoutSessionRequired = true,
+                IdentityTokenLifetime = 120,
+                RequireSignOutPrompt = true,
+                AllowedScopes =
+                {
+                    Constants.StandardScopes.OpenId,
+                    Constants.StandardScopes.Profile
+                },
+                RequireConsent = false,
+                AllowRememberConsent = true,
+            },
+
+            #endregion
         };
 
         private static IEnumerable<Scope> Scopes => new List<Scope>
