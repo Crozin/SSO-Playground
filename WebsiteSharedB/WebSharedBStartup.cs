@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -31,12 +32,12 @@ namespace WebsiteSharedB
             {
                 Authority = "http://auth.sso.com",
                 ClientId = "websitesharedb",
-                RedirectUri = "http://website-b.shared.sso/",
+                RedirectUri = "http://website-b.shared.sso.com/",
                 ResponseType = "id_token",
                 SignInAsAuthenticationType = "Cookies",
                 Scope = "openid profile",
                 UseTokenLifetime = true,
-                PostLogoutRedirectUri = "http://website-b.shared.sso/",
+                PostLogoutRedirectUri = "http://website-b.shared.sso.com/",
                 Notifications = new OpenIdConnectAuthenticationNotifications
                 {
                     SecurityTokenValidated = n =>
@@ -63,6 +64,19 @@ namespace WebsiteSharedB
                         return Task.CompletedTask;
                     }
                 }
+            });
+
+            app.Use(async (ctx, next) =>
+            {
+                var cp = ctx.Authentication.User;
+                var cookie = ctx.Request.Cookies["idsrv.frontchannelsso"];
+
+                if (cp == null || !cp.Identity.IsAuthenticated && !string.IsNullOrEmpty(cookie))
+                {
+                    ctx.Response.Redirect(ctx.Request.PathBase + "/Home/OidcSignIn");
+                }
+
+                await next();
             });
         }
     }

@@ -42,24 +42,24 @@ namespace IdentityServer
         public string GrantType => "universal_signin";
     }
 
-    public class Xxx : ICustomTokenResponseGenerator
+    public class CustomTokenResponseGenerator : ICustomTokenResponseGenerator
     {
-        private class XxxConfig
+        private class CustomTokenResponseGeneratorConfig
         {
             public string Uri { get; }
 
-            public XxxConfig(string uri)
+            public CustomTokenResponseGeneratorConfig(string uri)
             {
                 Uri = uri;
             }
         }
 
-        private static readonly IDictionary<string, XxxConfig> Database = new Dictionary<string, XxxConfig>
+        private static readonly IDictionary<string, CustomTokenResponseGeneratorConfig> Database = new Dictionary<string, CustomTokenResponseGeneratorConfig>
         {
             // TODO użyć adresów z np. ".gif"?
-            ["websitepracuj"] = new XxxConfig("http://website-pracuj.sso/Auth/UniversalOidcSignIn"),
-            ["websitecv"] = new XxxConfig("http://website-cv.sso/Auth/UniversalOidcSignIn"),
-            ["websitepracodawcy"] = new XxxConfig("http://website-pracodawcy.sso/Auth/UniversalOidcSignIn")
+            ["websitepracuj"] = new CustomTokenResponseGeneratorConfig("http://website-pracuj.sso/Auth/UniversalOidcSignIn"),
+            ["websitecv"] = new CustomTokenResponseGeneratorConfig("http://website-cv.sso/Auth/UniversalOidcSignIn"),
+            ["websitepracodawcy"] = new CustomTokenResponseGeneratorConfig("http://website-pracodawcy.sso/Auth/UniversalOidcSignIn")
         };
 
         private static readonly ICollection<string> AllowedClients = new List<string> { "websitepracuj", "websitecv", "websitepracodawcy" };
@@ -67,7 +67,7 @@ namespace IdentityServer
         private readonly IClientStore clientStore;
         private readonly TokenValidator tokenValidator;
 
-        public Xxx(IClientStore clientStore, TokenValidator tokenValidator)
+        public CustomTokenResponseGenerator(IClientStore clientStore, TokenValidator tokenValidator)
         {
             this.clientStore = clientStore;
             this.tokenValidator = tokenValidator;
@@ -92,7 +92,7 @@ namespace IdentityServer
 
             if (AllowedClients.Contains(request.Client.ClientId) && request.GrantType == Constants.GrantTypes.AuthorizationCode)
             {
-                string GenerateToken(Client client, XxxConfig config, string sub, string sid, long timestamp, string ip)
+                string GenerateToken(Client client, CustomTokenResponseGeneratorConfig config, string sub, string sid, long timestamp, string ip)
                 {
                     var token = new UniversalSignInToken(sub, sid, timestamp.ToString(), ip);
                     var crypted = token.Encrypt(client);

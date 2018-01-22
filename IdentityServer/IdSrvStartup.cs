@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using System.Web;
 using IdentityServer3.Core;
 using IdentityServer3.Core.Configuration;
+using IdentityServer3.Core.Events;
 using IdentityServer3.Core.Models;
 using IdentityServer3.Core.Services;
+using IdentityServer3.Core.Services.Default;
 using IdentityServer3.Core.Services.InMemory;
 using IdentityServer3.Core.Validation;
 using Microsoft.Owin;
@@ -382,11 +386,11 @@ namespace IdentityServer
             {
                 ClientId = "websiteshareda",
                 ClientName = "WebSite Shared A",
-                ClientUri = "http://website-a.shared.sso/",
+                ClientUri = "http://website-a.shared.sso.com/",
                 Flow = Flows.Implicit,
-                RedirectUris = new List<string> { "http://website-a.shared.sso/" },
-                PostLogoutRedirectUris = new List<string> { "http://website-a.shared.sso/" },
-                LogoutUri = "http://website-a.shared.sso/Home/OidcSignOut",
+                RedirectUris = new List<string> { "http://website-a.shared.sso.com/" },
+                PostLogoutRedirectUris = new List<string> { "http://website-a.shared.sso.com/" },
+                LogoutUri = "http://website-a.shared.sso.com/Home/OidcSignOut",
                 LogoutSessionRequired = true,
                 IdentityTokenLifetime = 120,
                 RequireSignOutPrompt = true,
@@ -402,11 +406,11 @@ namespace IdentityServer
             {
                 ClientId = "websitesharedb",
                 ClientName = "WebSite Shared B",
-                ClientUri = "http://website-b.shared.sso/",
+                ClientUri = "http://website-b.shared.sso.com/",
                 Flow = Flows.Implicit,
-                RedirectUris = new List<string> { "http://website-b.shared.sso/" },
-                PostLogoutRedirectUris = new List<string> { "http://website-b.shared.sso/" },
-                LogoutUri = "http://website-b.shared.sso/Home/OidcSignOut",
+                RedirectUris = new List<string> { "http://website-b.shared.sso.com/" },
+                PostLogoutRedirectUris = new List<string> { "http://website-b.shared.sso.com/" },
+                LogoutUri = "http://website-b.shared.sso.com/Home/OidcSignOut",
                 LogoutSessionRequired = true,
                 IdentityTokenLifetime = 120,
                 RequireSignOutPrompt = true,
@@ -524,7 +528,8 @@ namespace IdentityServer
 
             isf.CustomGrantValidators.Add(new Registration<ICustomGrantValidator, DelegationGrantValidator>());
             isf.CustomGrantValidators.Add(new Registration<ICustomGrantValidator, UniversalSignInGrantValidator>());
-            isf.CustomTokenResponseGenerator = new Registration<ICustomTokenResponseGenerator, Xxx>();
+            isf.CustomTokenResponseGenerator = new Registration<ICustomTokenResponseGenerator, CustomTokenResponseGenerator>();
+            isf.EventService = new Registration<IEventService, CustomEventService>();
 
             var iso = new IdentityServerOptions
             {
@@ -546,6 +551,13 @@ namespace IdentityServer
                             Text = "rejestracja"
                         }
                     }
+                },
+                EventsOptions = new EventsOptions
+                {
+                    RaiseSuccessEvents = true,
+                    RaiseErrorEvents = true,
+                    RaiseFailureEvents = true,
+                    RaiseInformationEvents = true
                 }
             };
 
@@ -590,6 +602,34 @@ namespace IdentityServer
                 ClientId = "952075585362-9ld90ptus3mitjrdpn3svc8siuk3b8vp.apps.googleusercontent.com",
                 ClientSecret = "a6OO-wq8KPe4PJ9kFoY0-788"
             });
+        }
+
+        public class CustomEventService : DefaultEventService
+        {
+            public override async Task RaiseAsync<T>(Event<T> evt)
+            {
+                await base.RaiseAsync(evt);
+
+                if (evt.Id == EventConstants.Ids.EndpointSuccess)
+                {
+                    HttpContext.Current.GetOwinContext().Response.Cookies.Append("idsrv.frontchannelsso", "xxxx", new Microsoft.Owin.CookieOptions
+                    {
+                        Domain = ".sso.com",
+                        Expires = DateTime.UtcNow.AddDays(2),
+                        HttpOnly = true
+                    });
+                }
+
+                if (evt.Id == EventConstants.Ids.Logout)
+                {
+                    HttpContext.Current.GetOwinContext().Response.Cookies.Append("idsrv.frontchannelsso", "xxxx", new Microsoft.Owin.CookieOptions
+                    {
+                        Domain = ".sso.com",
+                        Expires = DateTime.UtcNow.AddYears(-1),
+                        HttpOnly = true
+                    });
+                }
+            }
         }
     }
 }
