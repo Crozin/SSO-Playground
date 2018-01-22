@@ -517,8 +517,11 @@ namespace IdentityServer
         {
             var isf = new IdentityServerServiceFactory()
                 .UseInMemoryClients(Clients)
-                .UseInMemoryScopes(Scopes)
-                .UseInMemoryUsers(Users);
+                .UseInMemoryScopes(Scopes);
+//                .UseInMemoryUsers(Users);
+
+            isf.Register(new Registration<List<InMemoryUser>>(Users));
+            isf.UserService = new Registration<IUserService, CustomUserService>();
 
             isf.SecretValidators = new List<Registration<ISecretValidator>> { new Registration<ISecretValidator,PlainTextSharedSecretValidator>() };
 //            isf.RefreshTokenStore = new Registration<IRefreshTokenStore, InMemoryRefreshTokenStore>();
@@ -628,6 +631,34 @@ namespace IdentityServer
                         Expires = DateTime.UtcNow.AddYears(-1),
                         HttpOnly = true
                     });
+                }
+            }
+        }
+
+        public class CustomUserService : InMemoryUserService
+        {
+            public CustomUserService(List<InMemoryUser> users) : base(users) { }
+
+            public override async Task AuthenticateLocalAsync(LocalAuthenticationContext context)
+            {
+                await base.AuthenticateLocalAsync(context);
+
+                if (context.AuthenticateResult != null)
+                {
+                    var sub = context.AuthenticateResult.User.FindFirst("sub")?.Value;
+
+                    if (sub == "2#alice")
+                    {
+//                        var code = await this.userManager.GenerateTwoFactorTokenAsync(id, "sms");
+//                        var result = await userManager.NotifyTwoFactorTokenAsync(id, "sms", code);
+
+//                        if (!result.Succeeded)
+//                        {
+//                            context.AuthenticateResult = new AuthenticateResult(result.Errors.First());
+//                        }
+
+                        context.AuthenticateResult = new AuthenticateResult("~/TwoFactor", sub, sub);
+                    }
                 }
             }
         }
