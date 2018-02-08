@@ -192,6 +192,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IdSrvStartup.cs" />
     <Compile Include="Controllers\TwoFactorController.cs" />
+    <Compile Include="Services\CustomUserService.cs" />
+    <Compile Include="Services\TenantAwareUserService.cs" />
     <Compile Include="UniversalSignInGrantValidator.cs" />
   </ItemGroup>
   <ItemGroup>

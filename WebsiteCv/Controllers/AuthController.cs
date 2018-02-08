@@ -20,6 +20,7 @@ namespace WebsiteCv.Controllers
         public ActionResult SignOut()
         {
             Request.GetOwinContext().Authentication.SignOut();
+            Response.Cookies.Add(new HttpCookie("usic", "xx") { Expires = DateTime.UtcNow.AddDays(-1) });
 
             return Redirect("/");
         }

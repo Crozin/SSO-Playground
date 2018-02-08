@@ -62,14 +62,22 @@ namespace SharedNet
             };
         }
 
-        public static Task HandleRedirectToIdentityProvider(RedirectToIdentityProviderNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> n)
+        public static Func<RedirectToIdentityProviderNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions>, Task> HandleRedirectToIdentityProvider(string arcValues = null)
         {
-            if (n.ProtocolMessage.RequestType == OpenIdConnectRequestType.LogoutRequest)
+            return n =>
             {
-                n.ProtocolMessage.IdTokenHint = n.OwinContext.Authentication.User.FindFirst("id_token")?.Value;
-            }
+                if (n.ProtocolMessage.RequestType == OpenIdConnectRequestType.AuthenticationRequest && !string.IsNullOrEmpty(arcValues))
+                {
+                    n.ProtocolMessage.AcrValues = arcValues;
+                }
 
-            return Task.CompletedTask;
+                if (n.ProtocolMessage.RequestType == OpenIdConnectRequestType.LogoutRequest)
+                {
+                    n.ProtocolMessage.IdTokenHint = n.OwinContext.Authentication.User.FindFirst("id_token")?.Value;
+                }
+
+                return Task.CompletedTask;
+            };
         }
     }
 }

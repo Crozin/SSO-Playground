@@ -18,7 +18,7 @@ namespace Website3
         {
             JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
 
-            const string scope = "openid profile";
+            const string scope = "openid roles profile";
 
             var tvp = new TokenValidationParameters
             {
@@ -63,7 +63,7 @@ namespace Website3
                         // available: code, id_token, scope, state, session_state, nonce
                         return Task.CompletedTask;
                     },
-                    RedirectToIdentityProvider = OpenIdConnectAuthenticationEventsHandler.HandleRedirectToIdentityProvider
+                    RedirectToIdentityProvider = OpenIdConnectAuthenticationEventsHandler.HandleRedirectToIdentityProvider("tenant:strefa abc:def")
                 }
             });
         }

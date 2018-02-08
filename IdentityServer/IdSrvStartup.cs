@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Web;
+using IdentityServer.Services;
 using IdentityServer3.Core;
 using IdentityServer3.Core.Configuration;
 using IdentityServer3.Core.Events;
@@ -134,6 +135,7 @@ namespace IdentityServer
                 AllowedScopes =
                 {
                     Constants.StandardScopes.OpenId,
+                    Constants.StandardScopes.Roles,
                     Constants.StandardScopes.Profile
                 },
                 AlwaysSendClientClaims = true,
@@ -190,6 +192,7 @@ namespace IdentityServer
                 AllowedScopes =
                 {
                     Constants.StandardScopes.OpenId,
+                    Constants.StandardScopes.Roles,
                     Constants.StandardScopes.Profile,
                     Constants.StandardScopes.Email,
                     Constants.StandardScopes.OfflineAccess,
@@ -424,11 +427,76 @@ namespace IdentityServer
             },
 
             #endregion
+
+            #region Actual Websites
+            
+            new Client
+            {
+                ClientId = "website_zarobki_eldorado",
+                ClientSecrets = { new Secret("secret") },
+                ClientName = "Zarobki Pracuj.pl",
+                ClientUri = "http://localhost:3380/",
+                Flow = Flows.Hybrid,
+                RedirectUris = new List<string> { "http://localhost:3380/signin-oidc" },
+                PostLogoutRedirectUris = new List<string> { "http://localhost:3380/" },
+                LogoutUri = "http://localhost:3380/Home/OidcSignOut",
+                LogoutSessionRequired = true,
+                IdentityTokenLifetime = 120,
+                AccessTokenLifetime = 120,
+                AuthorizationCodeLifetime = 10,
+                AccessTokenType = AccessTokenType.Jwt,
+                RequireSignOutPrompt = true,
+                PrefixClientClaims = false,
+                AllowedScopes =
+                {
+                    Constants.StandardScopes.OpenId,
+                    Constants.StandardScopes.Roles,
+                    Constants.StandardScopes.Profile,
+                    Constants.StandardScopes.OfflineAccess,
+                    "dummy"
+                },
+                AlwaysSendClientClaims = true,
+                RequireConsent = false,
+                AllowRememberConsent = true,
+            },
+            new Client
+            {
+                ClientId = "website_pracodawcy_frontend",
+                ClientSecrets = { new Secret("secret") },
+                ClientName = "Pracodawcy Pracuj.pl",
+                ClientUri = "http://localhost:8000/app_dev.php/",
+                Flow = Flows.Hybrid,
+                RedirectUris = new List<string> { "http://localhost:8000/app_dev.php/dummy/oidc-signin" },
+                PostLogoutRedirectUris = new List<string> { "http://localhost:8000/app_dev.php/" },
+                LogoutUri = "http://localhost:8000/app_dev.php/dummy/oidc-signout",
+                LogoutSessionRequired = true,
+                IdentityTokenLifetime = 120,
+                AccessTokenLifetime = 120,
+                AuthorizationCodeLifetime = 10,
+                AccessTokenType = AccessTokenType.Jwt,
+                RequireSignOutPrompt = true,
+                PrefixClientClaims = false,
+                AllowedScopes =
+                {
+                    Constants.StandardScopes.OpenId,
+                    Constants.StandardScopes.Roles,
+                    Constants.StandardScopes.Profile,
+                    Constants.StandardScopes.OfflineAccess,
+                    "dummy",
+                    "website_pracodawcy_frontend"
+                },
+                AlwaysSendClientClaims = true,
+                RequireConsent = false,
+                AllowRememberConsent = true
+            }
+
+            #endregion
         };
 
         private static IEnumerable<Scope> Scopes => new List<Scope>
         {
             StandardScopes.OpenId,
+            StandardScopes.RolesAlwaysInclude,
             StandardScopes.OfflineAccess,
             StandardScopes.EmailAlwaysInclude,
             StandardScopes.ProfileAlwaysInclude,
@@ -466,49 +534,106 @@ namespace IdentityServer
             new Scope
             {
                 Name = "dummy",
-                Type = ScopeType.Resource
+                Type = ScopeType.Resource,
+                AllowUnrestrictedIntrospection = true
+            },
+            new Scope
+            {
+                Name = "website_pracodawcy_frontend",
+                AllowUnrestrictedIntrospection = true,
+                ScopeSecrets = { new Secret("secret") },
+                ShowInDiscoveryDocument = false
             }
         };
 
-        private static readonly List<InMemoryUser> Users = new List<InMemoryUser>
+        private static readonly List<InMemoryUser> PracujUsers = new List<InMemoryUser>
         {
             new InMemoryUser
             {
                 Username = "bob",
                 Password = "pwd",
-                Subject = "1#bob",
+                Subject = "21370331",
                 Claims = new[]
                 {
                     new Claim(Constants.ClaimTypes.GivenName, "Bob"),
                     new Claim(Constants.ClaimTypes.FamilyName, "Smith"),
                     new Claim(Constants.ClaimTypes.Name, "Bob Smith"),
-                    new Claim(Constants.ClaimTypes.Email, "bob@demo.sso")
+                    new Claim(Constants.ClaimTypes.Email, "bob@demo.sso"),
+                    new Claim(Constants.ClaimTypes.Role, "pracuj_user")
                 }
             },
             new InMemoryUser
             {
                 Username = "alice",
                 Password = "pwd",
-                Subject = "2#alice",
+                Subject = "2",
                 Claims = new[]
                 {
                     new Claim(Constants.ClaimTypes.GivenName, "Alice"),
                     new Claim(Constants.ClaimTypes.FamilyName, "Smith"),
                     new Claim(Constants.ClaimTypes.Name, "Alice Smith"),
-                    new Claim(Constants.ClaimTypes.Email, "alice@demo.sso")
+                    new Claim(Constants.ClaimTypes.Email, "alice@demo.sso"),
+                    new Claim(Constants.ClaimTypes.Role, "pracuj_user")
                 }
             },
             new InMemoryUser
             {
                 Username = "joe",
                 Password = "pwd",
-                Subject = "3#joe",
+                Subject = "3",
                 Claims = new[]
                 {
                     new Claim(Constants.ClaimTypes.GivenName, "Joe"),
                     new Claim(Constants.ClaimTypes.FamilyName, "Doe"),
                     new Claim(Constants.ClaimTypes.Name, "Joe Doe"),
-                    new Claim(Constants.ClaimTypes.Email, "joe@demo.sso")
+                    new Claim(Constants.ClaimTypes.Email, "joe@demo.sso"),
+                    new Claim(Constants.ClaimTypes.Role, "pracuj_user")
+                }
+            },
+            new InMemoryUser
+            {
+                Username = "prac",
+                Password = "pwd",
+                Subject = "4",
+                Claims = new[]
+                {
+                    new Claim(Constants.ClaimTypes.GivenName, "Prac"),
+                    new Claim(Constants.ClaimTypes.FamilyName, "Usr"),
+                    new Claim(Constants.ClaimTypes.Name, "Prac Usr"),
+                    new Claim(Constants.ClaimTypes.Email, "prac.usr@demo.sso"),
+                    new Claim(Constants.ClaimTypes.Role, "pracuj_user")
+                }
+            }
+        };
+
+        private static readonly List<InMemoryUser> StrefaUsers = new List<InMemoryUser>
+        {
+            new InMemoryUser
+            {
+                Username = "str",
+                Password = "pwd",
+                Subject = "100",
+                Claims = new[]
+                {
+                    new Claim(Constants.ClaimTypes.GivenName, "Str"),
+                    new Claim(Constants.ClaimTypes.FamilyName, "Usr"),
+                    new Claim(Constants.ClaimTypes.Name, "Str Usr"),
+                    new Claim(Constants.ClaimTypes.Email, "str.usr@demo.sso"),
+                    new Claim(Constants.ClaimTypes.Role, "strefa_user")
+                }
+            },
+            new InMemoryUser
+            {
+                Username = "demoats",
+                Password = "pwd",
+                Subject = "101",
+                Claims = new[]
+                {
+                    new Claim(Constants.ClaimTypes.GivenName, "Demo"),
+                    new Claim(Constants.ClaimTypes.FamilyName, "Demo"),
+                    new Claim(Constants.ClaimTypes.Name, "Demo Demo"),
+                    new Claim(Constants.ClaimTypes.Email, "demoats@pracuj.pl"),
+                    new Claim(Constants.ClaimTypes.Role, "strefa_user")
                 }
             }
         };
@@ -520,8 +645,18 @@ namespace IdentityServer
                 .UseInMemoryScopes(Scopes);
 //                .UseInMemoryUsers(Users);
 
-            isf.Register(new Registration<List<InMemoryUser>>(Users));
-            isf.UserService = new Registration<IUserService, CustomUserService>();
+
+            isf.UserService = new Registration<IUserService>(ctx => new CustomUserService(PracujUsers));
+//            isf.UserService = new Registration<IUserService>(ctx =>
+//            {
+//                var userServices = new Dictionary<string, IUserService>
+//                {
+//                    { Tenants.Pracuj, new CustomUserService(PracujUsers) },
+//                    { Tenants.Strefa, new CustomUserService(StrefaUsers) }
+//                };
+//
+//                return new TenantAwareUserService(userServices, Tenants.Pracuj);
+//            });
 
             isf.SecretValidators = new List<Registration<ISecretValidator>> { new Registration<ISecretValidator,PlainTextSharedSecretValidator>() };
 //            isf.RefreshTokenStore = new Registration<IRefreshTokenStore, InMemoryRefreshTokenStore>();
@@ -631,34 +766,6 @@ namespace IdentityServer
                         Expires = DateTime.UtcNow.AddYears(-1),
                         HttpOnly = true
                     });
-                }
-            }
-        }
-
-        public class CustomUserService : InMemoryUserService
-        {
-            public CustomUserService(List<InMemoryUser> users) : base(users) { }
-
-            public override async Task AuthenticateLocalAsync(LocalAuthenticationContext context)
-            {
-                await base.AuthenticateLocalAsync(context);
-
-                if (context.AuthenticateResult != null)
-                {
-                    var sub = context.AuthenticateResult.User.FindFirst("sub")?.Value;
-
-                    if (sub == "2#alice")
-                    {
-//                        var code = await this.userManager.GenerateTwoFactorTokenAsync(id, "sms");
-//                        var result = await userManager.NotifyTwoFactorTokenAsync(id, "sms", code);
-
-//                        if (!result.Succeeded)
-//                        {
-//                            context.AuthenticateResult = new AuthenticateResult(result.Errors.First());
-//                        }
-
-                        context.AuthenticateResult = new AuthenticateResult("~/TwoFactor", sub, sub);
-                    }
                 }
             }
         }

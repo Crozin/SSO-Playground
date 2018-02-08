@@ -61,7 +61,7 @@ namespace Website5.Controllers
                 return Redirect(ar.CreateAuthorizeUrl(
                     clientId: "website5",
                     responseType: "code id_token token",
-                    scope: "openid profile email offline_access dummy",
+                    scope: "openid roles profile email offline_access dummy",
                     redirectUri: "http://website5.sso/Auth/SignInCallback",
                     state: state,
                     nonce: nonce,
