@@ -154,6 +154,9 @@
     <Content Include="Content\bootstrap.min.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\custom.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\logo.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -162,6 +165,14 @@
     </Content>
     <Content Include="Global.asax" />
     <Content Include="README.md" />
+    <Content Include="Scripts\custom.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="templates\_authorizeresponse.html" />
+    <Content Include="templates\_error.html" />
+    <Content Include="templates\_layout.html" />
+    <Content Include="templates\_loggedOut.html" />
+    <Content Include="templates\_logout.html" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />

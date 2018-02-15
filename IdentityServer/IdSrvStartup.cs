@@ -464,15 +464,15 @@ namespace IdentityServer
                 ClientId = "website_pracodawcy_frontend",
                 ClientSecrets = { new Secret("secret") },
                 ClientName = "Pracodawcy Pracuj.pl",
-                ClientUri = "http://localhost:8000/app_dev.php/",
+                ClientUri = "http://localhost:8050/",
                 Flow = Flows.Hybrid,
-                RedirectUris = new List<string> { "http://localhost:8000/app_dev.php/dummy/oidc-signin" },
-                PostLogoutRedirectUris = new List<string> { "http://localhost:8000/app_dev.php/" },
-                LogoutUri = "http://localhost:8000/app_dev.php/dummy/oidc-signout",
+                RedirectUris = new List<string> { "http://localhost:8050/app.php/oidc-signin", "http://localhost:8050/app_dev.php/oidc-signin" },
+                PostLogoutRedirectUris = new List<string> { "http://localhost:8050/app.php/", "http://localhost:8050/app_dev.php/" },
+                LogoutUri = "http://localhost:8050/app_dev.php/oidc-signout",
                 LogoutSessionRequired = true,
                 IdentityTokenLifetime = 120,
                 AccessTokenLifetime = 120,
-                AuthorizationCodeLifetime = 10,
+                AuthorizationCodeLifetime = 120,
                 AccessTokenType = AccessTokenType.Jwt,
                 RequireSignOutPrompt = true,
                 PrefixClientClaims = false,
@@ -484,6 +484,36 @@ namespace IdentityServer
                     Constants.StandardScopes.OfflineAccess,
                     "dummy",
                     "website_pracodawcy_frontend"
+                },
+                AlwaysSendClientClaims = true,
+                RequireConsent = false,
+                AllowRememberConsent = true
+            },
+            new Client
+            {
+                ClientId = "website_cv_frontend",
+                ClientSecrets = { new Secret("secret") },
+                ClientName = "CV.Pracuj.pl",
+                ClientUri = "http://localhost:8060/",
+                Flow = Flows.Hybrid,
+                RedirectUris = new List<string> { "http://localhost:8060/app.php/oidc-signin", "http://localhost:8060/app_dev.php/oidc-signin" },
+                PostLogoutRedirectUris = new List<string> { "http://localhost:8060/app.php/", "http://localhost:8060/app_dev.php/" },
+                LogoutUri = "http://localhost:8060/app_dev.php/oidc-signout",
+                LogoutSessionRequired = true,
+                IdentityTokenLifetime = 120,
+                AccessTokenLifetime = 120,
+                AuthorizationCodeLifetime = 120,
+                AccessTokenType = AccessTokenType.Jwt,
+                RequireSignOutPrompt = true,
+                PrefixClientClaims = false,
+                AllowedScopes =
+                {
+                    Constants.StandardScopes.OpenId,
+                    Constants.StandardScopes.Roles,
+                    Constants.StandardScopes.Profile,
+                    Constants.StandardScopes.OfflineAccess,
+                    "dummy",
+                    "website_cv_frontend"
                 },
                 AlwaysSendClientClaims = true,
                 RequireConsent = false,
@@ -540,6 +570,13 @@ namespace IdentityServer
             new Scope
             {
                 Name = "website_pracodawcy_frontend",
+                AllowUnrestrictedIntrospection = true,
+                ScopeSecrets = { new Secret("secret") },
+                ShowInDiscoveryDocument = false
+            },
+            new Scope
+            {
+                Name = "website_cv_frontend",
                 AllowUnrestrictedIntrospection = true,
                 ScopeSecrets = { new Secret("secret") },
                 ShowInDiscoveryDocument = false
@@ -640,11 +677,17 @@ namespace IdentityServer
 
         public void Configuration(IAppBuilder app)
         {
+            var dvso = new DefaultViewServiceOptions();
+            dvso.Stylesheets.Add("~/Content/custom.css");
+            dvso.Scripts.Add("~/Scripts/custom.js");
+
+
             var isf = new IdentityServerServiceFactory()
                 .UseInMemoryClients(Clients)
                 .UseInMemoryScopes(Scopes);
 //                .UseInMemoryUsers(Users);
 
+            isf.ConfigureDefaultViewService(dvso);
 
             isf.UserService = new Registration<IUserService>(ctx => new CustomUserService(PracujUsers));
 //            isf.UserService = new Registration<IUserService>(ctx =>
