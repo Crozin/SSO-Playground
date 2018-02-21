@@ -54,7 +54,7 @@ namespace WebsitePracuj
                         // TODO raczej jakoś ładniej można by to zapewne ogarnąć niż poprzez sesję
                         HttpContext.Current.Session["universal_signin"] = us;
                     }),
-                    RedirectToIdentityProvider = OpenIdConnectAuthenticationEventsHandler.HandleRedirectToIdentityProvider
+                    RedirectToIdentityProvider = OpenIdConnectAuthenticationEventsHandler.HandleRedirectToIdentityProvider()
                 }
             });
 
