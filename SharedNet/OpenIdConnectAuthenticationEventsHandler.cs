@@ -23,7 +23,13 @@ namespace SharedNet
                 using (var tc = new TokenClient(configuration.TokenEndpoint, n.Options.ClientId, n.Options.ClientSecret, new WebRequestHandler()))
                 using (var uic = new UserInfoClient(configuration.UserInfoEndpoint, new WebRequestHandler()))
                 {
-                    var tr = await tc.RequestAuthorizationCodeAsync(n.Code, n.RedirectUri);
+                    var owinRequest = n.OwinContext.Request;
+
+                    var tr = await tc.RequestAuthorizationCodeAsync(n.Code, n.RedirectUri, null, new
+                    {
+                        end_user_ip = owinRequest.RemoteIpAddress,
+                        end_user_user_agent = owinRequest.Headers.Get("User-Agent")
+                    });
 
                     if (tr.IsError)
                         throw new Exception(tr.Error);

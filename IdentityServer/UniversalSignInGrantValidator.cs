@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using IdentityServer.Services;
 using IdentityServer3.Core;
 using IdentityServer3.Core.Models;
 using IdentityServer3.Core.Services;
@@ -16,16 +17,24 @@ namespace IdentityServer
 {
     public class UniversalSignInGrantValidator : ICustomGrantValidator
     {
+
+
         public async Task<CustomGrantValidationResult> ValidateAsync(ValidatedTokenRequest request)
         {
             await Task.Delay(1);
 
             var token = request.Raw.Get("Token");
+            var ip = request.Raw.Get("EndUserIp");
+            var ua = request.Raw.Get("EndUserUserAgent");
 
             if (string.IsNullOrEmpty(token))
-            {
                 return new CustomGrantValidationResult($"Missing '{nameof(token)}' parameter.");
-            }
+
+            if (string.IsNullOrEmpty(ip))
+                return new CustomGrantValidationResult($"Missing '{nameof(ip)}' parameter.");
+
+            if (string.IsNullOrEmpty(ua))
+                return new CustomGrantValidationResult($"Missing '{nameof(ua)}' parameter.");
 
             var usit = UniversalSignInToken.FromEncrypted(request.Client, token);
 
@@ -44,6 +53,8 @@ namespace IdentityServer
 
     public class CustomTokenResponseGenerator : ICustomTokenResponseGenerator
     {
+        private IUniversalSignInCodeStore universalSignInCodeStore;
+
         private class CustomTokenResponseGeneratorConfig
         {
             public string Uri { get; }
@@ -94,7 +105,7 @@ namespace IdentityServer
             {
                 string GenerateToken(Client client, CustomTokenResponseGeneratorConfig config, string sub, string sid, long timestamp, string ip)
                 {
-                    var token = new UniversalSignInToken(sub, sid, timestamp.ToString(), ip);
+                    var token = new UniversalSignInToken(sub, sid, timestamp, ip, "n/a");
                     var crypted = token.Encrypt(client);
 
                     return $"{config.Uri}?token={crypted}";
@@ -125,21 +136,67 @@ namespace IdentityServer
 
             return response;
         }
+
+
+        public async Task<TokenResponse> X_GenerateAsync(ValidatedTokenRequest request, TokenResponse response)
+        {
+            await Task.Delay(1).ConfigureAwait(false); // TODO tmp
+
+            if (request.GrantType == Constants.GrantTypes.AuthorizationCode && AllowedClients.Contains(request.Client.ClientId))
+            {
+                var universalSignInCodes = new List<string>();
+
+                foreach (var kvp in Database)
+                {
+                    var client = await clientStore.FindClientByIdAsync(kvp.Key);
+                    var config = kvp.Value;
+
+                    universalSignInCodes.Add(await GenerateUniversalSignInResponseAsync(request, client));
+                }
+
+                response.Custom.Add("universal_sign_in_codes", universalSignInCodes);
+            }
+
+            return response;
+        }
+
+        private async Task<string> GenerateUniversalSignInResponseAsync(ValidatedTokenRequest request, Client client)
+        {
+            string key;
+            var bytes = new byte[256];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(bytes);
+                key = Convert.ToBase64String(bytes);
+            }
+
+            var code = new UniversalSignInCode
+            {
+                Client = client,
+                Subject = request.Subject
+            };
+
+            await universalSignInCodeStore.StoreAsync(key, code).ConfigureAwait(false);
+
+            return key;
+        }
     }
 
     public class UniversalSignInToken
     {
         public string Sub { get; }
         public string Sid { get; }
-        public string Timestamp { get; }
+        public long IssueTimestamp { get; }
         public string Ip { get; }
+        public string UserAgent { get; }
 
-        public UniversalSignInToken(string sub, string sid, string timestamp, string ip)
+        public UniversalSignInToken(string sub, string sid, long issueTimestamp, string ip, string userAgent)
         {
             Sub = sub;
             Sid = sid;
-            Timestamp = timestamp;
+            IssueTimestamp = issueTimestamp;
             Ip = ip;
+            UserAgent = userAgent;
         }
 
         public static UniversalSignInToken FromEncrypted(Client client, string input)

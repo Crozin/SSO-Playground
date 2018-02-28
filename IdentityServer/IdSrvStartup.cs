@@ -433,7 +433,7 @@ namespace IdentityServer
             new Client
             {
                 ClientId = "website_zarobki_eldorado",
-                ClientSecrets = { new Secret("secret") },
+                ClientSecrets = { new Secret("secret"), new Secret("us-secret") { Type = "universal_signin" } },
                 ClientName = "Zarobki Pracuj.pl",
                 ClientUri = "http://localhost:3380/",
                 Flow = Flows.Hybrid,
@@ -687,6 +687,8 @@ namespace IdentityServer
                 .UseInMemoryScopes(Scopes);
 //                .UseInMemoryUsers(Users);
 
+            isf.Register(new Registration<IUniversalSignInCodeStore>(typeof(UniversalSignInCodeStore)));
+
             isf.ConfigureDefaultViewService(dvso);
 
             isf.UserService = new Registration<IUserService>(ctx => new CustomUserService(PracujUsers));
@@ -708,8 +710,14 @@ namespace IdentityServer
 //            isf.TokenHandleStore = new Registration<ITokenHandleStore, InMemoryTokenHandleStore>();
 
             isf.CustomGrantValidators.Add(new Registration<ICustomGrantValidator, DelegationGrantValidator>());
-            isf.CustomGrantValidators.Add(new Registration<ICustomGrantValidator, UniversalSignInGrantValidator>());
-            isf.CustomTokenResponseGenerator = new Registration<ICustomTokenResponseGenerator, CustomTokenResponseGenerator>();
+            isf.CustomGrantValidators.Add(new Registration<ICustomGrantValidator, X_UniversalSignInGrantValidator>());
+            isf.CustomTokenResponseGenerator = new Registration<ICustomTokenResponseGenerator>(ctx => new X_CustomTokenResponseGenerator(ctx.Resolve<IClientStore>(), null, new Dictionary<string, string>
+            {
+                ["websitepracuj"] = "http://website.pracuj.pl/",
+                ["websitecv"] = "http://website.cv.pl/",
+                ["websitepracodawcy"] = "http://website.pracodawcy.pl/",
+                ["website_zarobki_eldorado"] = "http://website.eldorado.pl/"
+            }));
             isf.EventService = new Registration<IEventService, CustomEventService>();
 
             var iso = new IdentityServerOptions
