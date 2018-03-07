@@ -461,6 +461,36 @@ namespace IdentityServer
             },
             new Client
             {
+                ClientId = "website_zarobki_b2c_frontend",
+                ClientSecrets = { new Secret("secret") },
+                ClientName = "Zarobki Pracuj.pl",
+                ClientUri = "http://localhost:8070/app.php/r/",
+                Flow = Flows.Hybrid,
+                RedirectUris = new List<string> { "http://localhost:8070/app.php/r/oidc-signin", "http://localhost:8070/app_dev.php/r/oidc-signin" },
+                PostLogoutRedirectUris = new List<string> { "http://localhost:8070/app.php/r/", "http://localhost:8070/app_dev.php/r/" },
+                LogoutUri = "http://localhost:8070/app_dev.php/r/oidc-signout",
+                LogoutSessionRequired = true,
+                IdentityTokenLifetime = 120,
+                AccessTokenLifetime = 120,
+                AuthorizationCodeLifetime = 120,
+                AccessTokenType = AccessTokenType.Jwt,
+                RequireSignOutPrompt = true,
+                PrefixClientClaims = false,
+                AllowedScopes =
+                {
+                    Constants.StandardScopes.OpenId,
+                    Constants.StandardScopes.Roles,
+                    Constants.StandardScopes.Profile,
+                    Constants.StandardScopes.OfflineAccess,
+                    "dummy",
+                    "website_zarobki_b2c_frontend"
+                },
+                AlwaysSendClientClaims = true,
+                RequireConsent = false,
+                AllowRememberConsent = true
+            },
+            new Client
+            {
                 ClientId = "website_pracodawcy_frontend",
                 ClientSecrets = { new Secret("secret") },
                 ClientName = "Pracodawcy Pracuj.pl",
@@ -570,6 +600,13 @@ namespace IdentityServer
             new Scope
             {
                 Name = "website_pracodawcy_frontend",
+                AllowUnrestrictedIntrospection = true,
+                ScopeSecrets = { new Secret("secret") },
+                ShowInDiscoveryDocument = false
+            },
+            new Scope
+            {
+                Name = "website_zarobki_b2c_frontend",
                 AllowUnrestrictedIntrospection = true,
                 ScopeSecrets = { new Secret("secret") },
                 ShowInDiscoveryDocument = false
