@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using IdentityModel;
 using Microsoft.Owin.Security.Cookies;
+using SharedNet;
 
 namespace WebsitePracodawcy.Controllers
 {
@@ -20,7 +21,11 @@ namespace WebsitePracodawcy.Controllers
         public ActionResult SignOut()
         {
             Request.GetOwinContext().Authentication.SignOut();
-            Response.Cookies.Add(new HttpCookie("usic", "xx") { Expires = DateTime.UtcNow.AddDays(-1) });
+            Response.Cookies.Set(new HttpCookie("usic", "x")
+            {
+                HttpOnly = true,
+                Expires = DateTime.Now.Subtract(TimeSpan.FromDays(100))
+            });
 
             return Redirect("/");
         }
@@ -42,14 +47,14 @@ namespace WebsitePracodawcy.Controllers
             }
         }
 
-        [AllowAnonymous]
-        public ActionResult UniversalOidcSignIn(string token)
+        [HttpPost, AllowAnonymous]
+        public ActionResult UniversalOidcSignIn(string code)
         {
-            // TODO http referer check? POST only?
-
-            Response.Cookies.Set(new HttpCookie("usic", token)
+            Response.AddHeader("Access-Control-Allow-Origin", "*");
+            Response.Cookies.Set(new HttpCookie("usic", code)
             {
-                HttpOnly = true
+                HttpOnly = true,
+                Expires = DateTime.Now.AddDays(60)
             });
 
             // http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever
@@ -59,8 +64,8 @@ namespace WebsitePracodawcy.Controllers
         [ChildActionOnly]
         public PartialViewResult SpreadUniversalOidcSignIn()
         {
-            var links = Session["universal_signin"] ?? new List<string>();
-            Session.Remove("universal_signin");
+            var links = Session["universal_sign_in"] ?? new List<UniversalSignInCodeDto>();
+            Session.Remove("universal_sign_in");
 
             return PartialView(links);
         }

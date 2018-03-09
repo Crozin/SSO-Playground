@@ -24,9 +24,9 @@ namespace WebsitePracodawcy
             var tvp = new TokenValidationParameters
             {
                 AuthenticationType = CookieAuthenticationDefaults.AuthenticationType,
-                NameClaimType = JwtClaimTypes.Name,
+                NameClaimType = "given_name",
                 RoleClaimType = JwtClaimTypes.Role,
-                ValidAudiences = new[] { "websitepracodawcy", "websitepracodawcy_us" }
+                ValidAudiences = new[] { "pracodawcy_usi_website_dev", "pracodawcy_usi_website_us_dev" }
             };
 
             app.UseNLog();
@@ -38,13 +38,14 @@ namespace WebsitePracodawcy
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectAuthenticationOptions
             {
-                Authority = "http://auth.sso.com",
-                ClientId = "websitepracodawcy",
+                                Authority = "https://auth-sso-dev.gp.local",
+//                Authority = "https://localhost/IdentityServer",
+                ClientId = "pracodawcy_usi_website_dev",
                 ClientSecret = "secret",
                 ResponseType = "code id_token",
                 Scope = scope,
-                RedirectUri = "http://website-pracodawcy.sso/Auth/OidcSignInCallback",
-                PostLogoutRedirectUri = "http://website-pracodawcy.sso/",
+                RedirectUri = "https://pracodawcy-usi.gp.local/Auth/OidcSignInCallback",
+                PostLogoutRedirectUri = "https://pracodawcy-usi.gp.local/",
                 TokenValidationParameters = tvp,
                 UseTokenLifetime = false,
                 Notifications = new OpenIdConnectAuthenticationNotifications
@@ -52,27 +53,32 @@ namespace WebsitePracodawcy
                     AuthorizationCodeReceived = OpenIdConnectAuthenticationEventsHandler.HandleAuthorizationCodeReceived(us =>
                     {
                         // TODO raczej jakoś ładniej można by to zapewne ogarnąć niż poprzez sesję
-                        HttpContext.Current.Session["universal_signin"] = us;
+                        HttpContext.Current.Session["universal_sign_in"] = us;
                     }),
                     RedirectToIdentityProvider = OpenIdConnectAuthenticationEventsHandler.HandleRedirectToIdentityProvider()
-                }
+                },
+                BackchannelCertificateValidator = new DummyCertificateValidator()
             });
 
             app.UseRefreshToken(new RefreshTokenOptions
             {
-                Authority = "http://auth.sso.com",
-                ClientId = "websitepracodawcy",
+                                Authority = "https://auth-sso-dev.gp.local",
+//                Authority = "https://localhost/IdentityServer",
+                ClientId = "pracodawcy_usi_website_dev",
                 ClientSecret = "secret",
-                TokenValidationParameters = tvp
+                TokenValidationParameters = tvp,
+                BackchannelCertificateValidator = new DummyCertificateValidator()
             });
 
             app.UseUniversalSignInTokenAuthentication(new UniversalSignInTokenAuthnticationOptions
             {
-                Authority = "http://auth.sso.com",
-                ClientId = "websitepracodawcy_us",
+                                Authority = "https://auth-sso-dev.gp.local",
+//                Authority = "https://localhost/IdentityServer",
+                ClientId = "pracodawcy_usi_website_us_dev",
                 ClientSecret = "secret",
                 Scope = scope,
-                TokenValidationParameters = tvp
+                TokenValidationParameters = tvp,
+                BackchannelCertificateValidator = new DummyCertificateValidator()
             });
         }
     }

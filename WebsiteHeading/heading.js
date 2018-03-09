@@ -26,24 +26,24 @@
                     "<a href='" + this.config.signoutUri + "' id='gp-heading-signout'>wyloguj się</a>";
             }
 
-            const headingMarkup =
+            var headingMarkup =
                 "<div class='container'>" +
                     "<div class='pull-right'>" +
                         userHeadingMarkup +
                     "</div>" +
-                    "Basic <abbr title='Signle Sign-On'>SSO</abbr>: " +
-                    "<a href='http://website1.sso/'>#1</a>, <a href='http://website2.sso/'>#2</a>, " +
-                    "<a href='http://website3.sso/'>#3</a>, <a href='http://website4.sso/'>#4</a>, " +
-                    "<a href='http://website5.sso/'>#5</a>, <a href='http://website6.sso/'>#6</a>" +
-                    " &mdash; " +
-                    "<abbr title='Frontchannel Single Sign-On'>FCSSO</abbr>: " +
-                    "<a href='http://website-a.shared.sso.com/'>A</a> | " +
-                    "<a href='http://website-b.shared.sso.com/'>B</a>" +
-                    " &mdash; " +
-                    "<abbr title='Stackoverflow'>SO</abbr>-like <abbr title='Universal Sign-On'>USO</abbr>: " +
-                    "<a href='http://website-pracuj.sso/'>Oferty</a> | " +
-                    "<a href='http://website-cv.sso/'>CV</a> | " +
-                    "<a href='http://website-pracodawcy.sso/'>Pracodawcy</a>" +
+//                    "Basic <abbr title='Signle Sign-On'>SSO</abbr>: " +
+//                    "<a href='http://website1.sso/'>#1</a>, <a href='http://website2.sso/'>#2</a>, " +
+//                    "<a href='http://website3.sso/'>#3</a>, <a href='http://website4.sso/'>#4</a>, " +
+//                    "<a href='http://website5.sso/'>#5</a>, <a href='http://website6.sso/'>#6</a>" +
+//                    " &mdash; " +
+//                    "<abbr title='Frontchannel Single Sign-On'>FCSSO</abbr>: " +
+//                    "<a href='http://website-a.shared.sso.com/'>A</a> | " +
+//                    "<a href='http://website-b.shared.sso.com/'>B</a>" +
+//                    " &mdash; " +
+//                    "<abbr title='Stackoverflow'>SO</abbr>-like <abbr title='Universal Sign-On'>USO</abbr>: " +
+                    "<a href='https://pracuj-usi.gp.local/'>Oferty</a> | " +
+                    "<a href='https://cv-usi.gp.local/'>CV</a> | " +
+                    "<a href='https://pracodawcy-usi.gp.local/'>Pracodawcy</a>" +
                 "</div>";
 
             target.insertAdjacentHTML("afterbegin", headingMarkup);

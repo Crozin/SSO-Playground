@@ -11,7 +11,13 @@ namespace WebsitePracuj.Controllers
         public async Task<ActionResult> Index()
         {
             var or = new OffersRepository();
-            var offers = await or.GetRecentAsync();
+//            var offers = await or.GetRecentAsync();
+            var offers = new List<OffersRepository.Offer>
+            {
+                new OffersRepository.Offer { Title = "Sprzedawca jajek" },
+                new OffersRepository.Offer { Title = "Programista .NET" },
+                new OffersRepository.Offer { Title = "Handlarz" },
+            };
 
             return View(new HomeIndexViewModel(offers.Select(o => new HomeIndexViewModel.OfferViewModel(o.Title)).ToList().AsReadOnly()));
         }

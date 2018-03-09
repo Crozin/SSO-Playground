@@ -59,7 +59,7 @@ namespace Owin
 
         private static HttpMessageHandler ResolveHttpMessageHandler(RefreshTokenOptions options)
         {
-            var httpMessageHandler = options.BackchannelHttpHandler ?? new WebRequestHandler();
+            var httpMessageHandler = options.BackchannelHttpHandler ?? new WebRequestHandler { ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true };
 
             if (options.BackchannelCertificateValidator != null)
             {

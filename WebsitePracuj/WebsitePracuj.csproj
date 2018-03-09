@@ -240,6 +240,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <Content Include="Views\Auth\SpreadUniversalOidcSignIn.cshtml" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SharedNet\SharedNet.csproj">
@@ -265,7 +266,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>53460</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://website-pracuj.sso/</IISUrl>
+          <IISUrl>https://pracuj-usi.gp.local/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

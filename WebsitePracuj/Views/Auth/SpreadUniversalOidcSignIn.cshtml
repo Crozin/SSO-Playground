@@ -1,6 +1,17 @@
-﻿@model IList<string>
+﻿@model IList<SharedNet.UniversalSignInCodeDto>
 
-@foreach (var link in Model)
+@foreach (var usic in Model)
 {
-    <img src="@link" alt="universal sign in" width="1" height="1" />
+    <script>
+        (function() {
+            "use strict";
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("POST", "@usic.TargetUri", true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.withCredentials = true;
+            xhr.send("code=" + encodeURIComponent("@usic.Code"));
+        })();
+    </script>
 }

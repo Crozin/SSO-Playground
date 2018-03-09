@@ -8,20 +8,25 @@ using IdentityModel.Client;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.Owin.Security.Notifications;
 using Microsoft.Owin.Security.OpenIdConnect;
+using Newtonsoft.Json;
+using NLog;
 
 namespace SharedNet
 {
     public class OpenIdConnectAuthenticationEventsHandler
     {
-        public static Func<AuthorizationCodeReceivedNotification, Task> HandleAuthorizationCodeReceived(Action<List<string>> processUniversalSignInAddresses)
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        public static Func<AuthorizationCodeReceivedNotification, Task> HandleAuthorizationCodeReceived(Action<List<UniversalSignInCodeDto>> processUniversalSignInAddresses)
         {
             return async n =>
             {
                 var configuration = await n.Options.ConfigurationManager.GetConfigurationAsync(n.OwinContext.Request.CallCancelled);
-
+                
                 // TODO new WebRequestHandler() -> coś w rodzaju Options.BackchannelHttpHandler
-                using (var tc = new TokenClient(configuration.TokenEndpoint, n.Options.ClientId, n.Options.ClientSecret, new WebRequestHandler()))
-                using (var uic = new UserInfoClient(configuration.UserInfoEndpoint, new WebRequestHandler()))
+                using (var wh = new WebRequestHandler { ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true })
+                using (var tc = new TokenClient(configuration.TokenEndpoint, n.Options.ClientId, n.Options.ClientSecret, wh))
+                using (var uic = new UserInfoClient(configuration.UserInfoEndpoint, wh))
                 {
                     var owinRequest = n.OwinContext.Request;
 
@@ -31,17 +36,21 @@ namespace SharedNet
                         end_user_user_agent = owinRequest.Headers.Get("User-Agent")
                     });
 
+                    Logger.Info("TR RAW: " + tr.Raw);
+
                     if (tr.IsError)
                         throw new Exception(tr.Error);
 
                     var uir = await uic.GetAsync(tr.AccessToken);
+
+                    Logger.Info("UIR RAW: " + uir.Raw);
 
                     if (uir.IsError)
                         throw new Exception(uir.Error);
 
                     // TODO wykorzystac uir?
 
-                    var us = tr.Json["universal_signin"]?.ToObject<List<string>>();
+                    var us = tr.Json["universal_sign_in"]?.ToObject<List<UniversalSignInCodeDto>>();
 
                     if (processUniversalSignInAddresses != null && us != null)
                     {
@@ -85,5 +94,14 @@ namespace SharedNet
                 return Task.CompletedTask;
             };
         }
+    }
+
+    public class UniversalSignInCodeDto
+    {
+        [JsonProperty("target_uri")]
+        public string TargetUri { get; set; }
+
+        [JsonProperty("code")]
+        public string Code { get; set; }
     }
 }

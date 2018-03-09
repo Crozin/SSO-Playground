@@ -84,7 +84,8 @@ namespace SharedNet
             TokenResponse tr;
 
             // TODO new WebRequestHandler() -> coś w rodzaju Options.BackchannelHttpHandler
-            using (var client = new TokenClient(configuration.TokenEndpoint, Options.ClientId, Options.ClientSecret, new WebRequestHandler()))
+            using (var wh = new WebRequestHandler { ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true })
+            using (var client = new TokenClient(configuration.TokenEndpoint, Options.ClientId, Options.ClientSecret, wh))
             {
                 tr = await client.RequestRefreshTokenAsync(refreshTokenClaim.Value, cancellationToken: context.Request.CallCancelled);
 

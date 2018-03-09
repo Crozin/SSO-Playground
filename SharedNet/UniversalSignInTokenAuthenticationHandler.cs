@@ -22,7 +22,7 @@ namespace SharedNet
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
         public string CookieName { get; set; } = "usic";
-        public string GrantType { get; set; } = "universal_signin";
+        public string GrantType { get; set; } = "universal_sign_in";
         public string Scope { get; set; }
 
         public TokenValidationParameters TokenValidationParameters { get; set; } = new TokenValidationParameters();
@@ -71,14 +71,20 @@ namespace SharedNet
             string sid;
 
             // TODO new WebRequestHandler() -> coś w rodzaju Options.BackchannelHttpHandler
-            using (var tc = new TokenClient(configuration.TokenEndpoint, Options.ClientId, Options.ClientSecret, new WebRequestHandler()))
+            using (var wh = new WebRequestHandler { ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true })
+            using (var tc = new TokenClient(configuration.TokenEndpoint, Options.ClientId, Options.ClientSecret, wh))
             {
-                var ustr = await tc.RequestCustomGrantAsync(Options.GrantType, Options.Scope, new { Token = usiToken });
+                var ustr = await tc.RequestCustomGrantAsync(Options.GrantType, Options.Scope, new
+                {
+                    code = usiToken,
+                    end_user_ip = Context.Request.RemoteIpAddress,
+                    end_user_user_agent = Context.Request.Headers.Get("User-Agent")
+                });
 
                 if (ustr.IsError)
                     throw new Exception(ustr.Error);
 
-                sid = ustr.Json["__delegating_sid"]?.ToObject<string>();
+//                sid = ustr.Json["__delegating_sid"]?.ToObject<string>();
 
                 rttr = await tc.RequestRefreshTokenAsync(ustr.RefreshToken);
 
@@ -112,10 +118,10 @@ namespace SharedNet
                 claimsIdentity.AddClaim(new Claim("refresh_token", rttr.RefreshToken));
             }
 
-            if (!string.IsNullOrEmpty(sid) && claimsIdentity.Claims.All(c => c.Type != "sid"))
-            {
-                claimsIdentity.AddClaim(new Claim("sid", sid));
-            }
+//            if (!string.IsNullOrEmpty(sid) && claimsIdentity.Claims.All(c => c.Type != "sid"))
+//            {
+//                claimsIdentity.AddClaim(new Claim("sid", sid));
+//            }
 
             return new AuthenticationTicket(claimsIdentity, null);
         }
@@ -170,7 +176,7 @@ namespace SharedNet
 
         private static HttpMessageHandler ResolveHttpMessageHandler(UniversalSignInTokenAuthnticationOptions options)
         {
-            var httpMessageHandler = options.BackchannelHttpHandler ?? new WebRequestHandler();
+            var httpMessageHandler = options.BackchannelHttpHandler ?? new WebRequestHandler { ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true };
 
             if (options.BackchannelCertificateValidator != null)
             {

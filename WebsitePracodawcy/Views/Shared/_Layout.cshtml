@@ -7,34 +7,34 @@
     @Styles.Render("~/Content/css")
 </head>
 <body>
-<header id="master-header">
-    trwa ładowanie nagłówka...
-</header>
+    <header id="master-header">
+        trwa ładowanie nagłówka...
+    </header>
 
-<div id="master-container" class="container">
-    @RenderBody()
-</div>
-    
-<footer id="master-footer">
-    <div class="container">
-        &copy; Pracuj
+    <div id="master-container" class="container">
+        @RenderBody()
     </div>
-</footer>
-    
-<script id="heading-config" type="text/x-pracuj-heading-configuration">
-    @Html.Raw(Json.Encode(new
-    {
-        user = Request.IsAuthenticated ? new
+
+    <footer id="master-footer">
+        <div class="container">
+            &copy; Pracuj
+        </div>
+    </footer>
+
+    <script id="heading-config" type="text/x-pracuj-heading-configuration">
+        @Html.Raw(Json.Encode(new
         {
-            name = User.Identity.Name
-        } : null,
-        target = "#master-header",
-        signinUri = Url.Action("Signin", "Auth", null),
-        signoutUri = Url.Action("Signout", "Auth", null)
-    }))
-</script>
-<script src="http://website-heading.sso/heading.js" async defer data-config="heading-config"></script>
-@RenderSection("scripts", required: false)
-@Html.Action("SpreadUniversalOidcSignIn", "Auth")
+            user = Request.IsAuthenticated ? new
+            {
+                name = User.Identity.Name
+            } : null,
+            target = "#master-header",
+            signinUri = Url.Action("Signin", "Auth", null),
+            signoutUri = Url.Action("Signout", "Auth", null)
+        }))
+    </script>
+    <script src="https://heading-usi.gp.local/heading.js" async defer data-config="heading-config"></script>
+    @RenderSection("scripts", required: false)
+    @Html.Action("SpreadUniversalOidcSignIn", "Auth")
 </body>
 </html>
